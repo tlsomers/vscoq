@@ -77,6 +77,7 @@ type delegated_task = {
 }
 
 type prepared_task =
+  | PRestart of { id : sentence_id; to_ : sentence_id }
   | PSkip of { id: sentence_id; error: Pp.t option }
   | PBlock of { id: sentence_id; error: Pp.t Loc.located }
   | PExec of executable_sentence
@@ -277,7 +278,7 @@ let interp_qed_delayed ~proof_using ~state_id ~st =
 let cut_overview task state document =
   let range = match task with
   | PDelegate { terminator_id } -> Document.range_of_id_with_blank_space document terminator_id
-  | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } ->
+  | PRestart {id } | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } ->
     Document.range_of_id_with_blank_space document id
   in
   let {prepared; processing; processed} = state.overview in
@@ -320,6 +321,31 @@ let id_of_first_task ~default = function
 let id_of_last_task ~default l =
   id_of_first_task ~default (List.rev l)
 
+(* <<<<<<< HEAD
+=======
+let invalidate_prepared_or_processing task state document =
+  let {prepared; processing} = state.overview in
+  match task with
+  | PDelegate { opener_id; terminator_id; tasks } ->
+    let proof_opener_id = id_of_first_task ~default:opener_id tasks in
+    let proof_closer_id = id_of_last_task ~default:terminator_id tasks in
+    let proof_begin_range = Document.range_of_id_with_blank_space document proof_opener_id in
+    let proof_end_range = Document.range_of_id_with_blank_space document proof_closer_id in
+    let range = Range.create ~end_:proof_end_range.end_ ~start:proof_begin_range.start in
+    (* When a job is delegated we shouldn't merge ranges (to get the proper progress report) *)
+    let prepared = remove_or_truncate_range range prepared in
+    let processing = remove_or_truncate_range range processing in
+    let overview = {state.overview with prepared; processing} in
+    {state with overview}
+  | PSkip { id } | PExec { id } | PQuery { id } | PRestart {id } ->
+    let range = Document.range_of_id_with_blank_space document id in
+    let prepared = remove_or_truncate_range range prepared in
+    let processing = remove_or_truncate_range range processing in
+    let overview = {state.overview with prepared; processing} in
+    {state with overview}
+
+>>>>>>> dbe099bab10bb0659382504888e25e0124f9bf0f *)
+
 let update_processing task state document =
   let {processing; prepared} = state.overview in
   match task with
@@ -334,7 +360,7 @@ let update_processing task state document =
     let prepared = RangeList.remove_or_truncate_range range prepared in
     let overview = {state.overview with prepared; processing} in
     {state with overview}
-  | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } ->
+  | PRestart { id } | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } ->
     let range = Document.range_of_id_with_blank_space document id in
     let processing = RangeList.insert_or_merge_range range processing in
     let prepared = RangeList.remove_or_truncate_range range prepared in
@@ -354,7 +380,7 @@ let update_prepared task document state =
     let prepared = List.append prepared [ range ] in
     let overview = {state.overview with prepared} in
     {state with overview}
-  | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } ->
+  | PRestart {id } | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } ->
     let range = Document.range_of_id_with_blank_space document id in
     let prepared = RangeList.insert_or_merge_range range prepared in
     let overview = {state.overview with prepared} in
@@ -370,7 +396,7 @@ let update_overview task state document =
     let overview = update_processed_as_Done (Success None) range state.overview in
     let overview = {overview with prepared} in
     {state with overview}
-  | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } ->
+  | PRestart { id } | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } ->
     update_processed id state document
   in
   match state.todo with
@@ -518,6 +544,7 @@ let prepare_task task : prepared_task list =
   | Skip { id; error } -> [PSkip { id; error }]
   | Block { id; error } -> [PBlock {id; error}]
   | Exec e -> [PExec e]
+  | Restart { id; to_} -> [PRestart { id; to_ }]
   | Query e -> [PQuery e]
   | OpaqueProof { terminator; opener_id; tasks; proof_using} ->
       match !options.delegation_mode with
@@ -537,6 +564,7 @@ let id_of_prepared_task = function
   | PBlock { id } -> id
   | PExec ex -> ex.id
   | PQuery ex -> ex.id
+  | PRestart { id } -> id
   | PDelegate { terminator_id } -> terminator_id
 
 let purge_state = function
@@ -585,6 +613,19 @@ let worker_main { ProofJob.tasks; initial_vernac_state = vs; doc_id; terminator_
     Feedback.msg_debug @@ Pp.str "==========================================================";
     exit 1
 
+let interp_Restart st id to_ =
+  match SM.find to_ st.of_sentence with
+  | (Done (Success (Some old_vs) as v), _) ->
+      let st = update st id v in
+      st, old_vs
+  | _ -> CErrors.anomaly  ~label:"vscoq" Pp.(str"Restart: to_ is incorrect")
+  | exception Not_found -> assert false
+
+let exec_error_id_of_outcome v id =
+  match v with
+  | Success _ -> None
+  | Error _ -> Some id
+
 let execute_task st (vs, events, interrupted) task =
   if interrupted then begin
     let st = update st (id_of_prepared_task task) (Error ((None,Pp.str "interrupted"),None,None)) in
@@ -615,6 +656,9 @@ let execute_task st (vs, events, interrupted) task =
           in
           let st = update st id v in
           (st, vs, events @ ev, false, exec_error)
+      | PRestart { id; to_ } -> 
+          let st, vs = interp_Restart st id to_ in
+          (st, vs, events, false, None)
       | PQuery { id; ast; synterp; error_recovery } ->
           let vs = { vs with Vernacstate.synterp } in
           let _, v, ev = interp_ast ~doc_id:st.doc_id ~state_id:id ~st:vs ~error_recovery ast in
