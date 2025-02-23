@@ -133,7 +133,10 @@ let base_id st =
     | [] -> aux l
     | S { id } :: _ -> Some id
     | E { id } :: _ -> Some id
-    | R { to_ } :: _ -> Some to_
+    | R { id } :: _ ->
+      (* Use the id of the restart, not the lemma to prove, to ensure that the restarted part of the proof is also
+         executed in continuous mode. *)
+      Some id
     end
   in
   aux st.proof_blocks
@@ -248,11 +251,12 @@ let push_state id ast synterp classif st =
         let st, task = push_Exec ex_sentence st in
         base, st, task
     end
-  | VtQuery -> (* queries have no impact, we don't push them *)
-    (* let base = base_id st in *)
-    (* let st, task = push_Query ex_sentence st in *)
-    (* TODO: CHECK *)
-    base_id st, st, Query ex_sentence
+  | VtQuery ->
+    (* Not pushing queries results in only the last query is executed when there are multiple consecutive queries.
+       Hence we still push queries despite them having no effect. *)
+    let base = base_id st in
+    let st, task = push_Query ex_sentence st in
+    base, st, task
   | VtProofStep _ ->
     let base = base_id st in
     let st, task = push_Exec ex_sentence st in

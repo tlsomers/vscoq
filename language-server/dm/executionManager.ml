@@ -100,9 +100,10 @@ type state = {
 
 let get_id_of_executed_task task =
   match task with
-  | PSkip {id} -> id
-  | PBlock {id} -> id
-  | PExec {id} -> id
+  | PRestart {id}
+  | PSkip {id}
+  | PBlock {id}
+  | PExec {id}
   | PQuery {id} -> id
   | PDelegate {terminator_id} -> terminator_id
 
@@ -320,31 +321,6 @@ let id_of_first_task ~default = function
 
 let id_of_last_task ~default l =
   id_of_first_task ~default (List.rev l)
-
-(* <<<<<<< HEAD
-=======
-let invalidate_prepared_or_processing task state document =
-  let {prepared; processing} = state.overview in
-  match task with
-  | PDelegate { opener_id; terminator_id; tasks } ->
-    let proof_opener_id = id_of_first_task ~default:opener_id tasks in
-    let proof_closer_id = id_of_last_task ~default:terminator_id tasks in
-    let proof_begin_range = Document.range_of_id_with_blank_space document proof_opener_id in
-    let proof_end_range = Document.range_of_id_with_blank_space document proof_closer_id in
-    let range = Range.create ~end_:proof_end_range.end_ ~start:proof_begin_range.start in
-    (* When a job is delegated we shouldn't merge ranges (to get the proper progress report) *)
-    let prepared = remove_or_truncate_range range prepared in
-    let processing = remove_or_truncate_range range processing in
-    let overview = {state.overview with prepared; processing} in
-    {state with overview}
-  | PSkip { id } | PExec { id } | PQuery { id } | PRestart {id } ->
-    let range = Document.range_of_id_with_blank_space document id in
-    let prepared = remove_or_truncate_range range prepared in
-    let processing = remove_or_truncate_range range processing in
-    let overview = {state.overview with prepared; processing} in
-    {state with overview}
-
->>>>>>> dbe099bab10bb0659382504888e25e0124f9bf0f *)
 
 let update_processing task state document =
   let {processing; prepared} = state.overview in
@@ -621,11 +597,6 @@ let interp_Restart st id to_ =
   | _ -> CErrors.anomaly  ~label:"vscoq" Pp.(str"Restart: to_ is incorrect")
   | exception Not_found -> assert false
 
-let exec_error_id_of_outcome v id =
-  match v with
-  | Success _ -> None
-  | Error _ -> Some id
-
 let execute_task st (vs, events, interrupted) task =
   if interrupted then begin
     let st = update st (id_of_prepared_task task) (Error ((None,Pp.str "interrupted"),None,None)) in
@@ -865,7 +836,7 @@ let invalidate1 of_sentence id =
 
 let cancel1 todo invalid_id =
   let task_of_id = function
-    | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } -> Stateid.equal id invalid_id
+    | PRestart { id } | PSkip { id } | PExec { id } | PQuery { id } | PBlock { id } -> Stateid.equal id invalid_id
     | PDelegate _ -> false
   in
   List.filter task_of_id todo
