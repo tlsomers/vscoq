@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/coq-community/vscoq.git"
   },
-  "icon": "assets/logo.png",
+  "icon": "assets/icon-rocq-orange.png",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -46,8 +46,8 @@
         ],
         "configuration": "./syntax/coq.language-configuration.json",
         "icon": {
-          "light": "./assets/logo.png",
-          "dark": "./assets/logo.png"
+          "light": "./assets/icon-rocq-orange.png",
+          "dark": "./assets/icon-rocq-orange.png"
         }
       },
       {
@@ -61,8 +61,8 @@
         ],
         "configuration": "./syntax/coq-project.language-configuration.json",
         "icon": {
-          "light": "./assets/logo.png",
-          "dark": "./assets/logo.png"
+          "light": "./assets/icon-rocq-orange.png",
+          "dark": "./assets/icon-rocq-orange.png"
         }
       }
     ],
@@ -83,7 +83,7 @@
         {
           "id": "vscoq-sidebar",
           "title": "Coq Proof Assistant",
-          "icon": "./assets/vscoq_logo.svg"
+          "icon": "./assets/icon-rocq-black.svg"
         }
       ]
     },
@@ -537,8 +537,8 @@
       {
         "id": "vscoq.menu",
         "icon": {
-          "dark": "./assets/vscoq-mini-dark.svg",
-          "light": "./assets/vscoq-mini-light.svg"
+          "dark": "./assets/icon-rocq-mini-dark.svg",
+          "light": "./assets/icon-rocq-mini-light.svg"
         },
         "label": "Coq"
       },
