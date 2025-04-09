@@ -1,6 +1,6 @@
 (**************************************************************************)
 (*                                                                        *)
-(*                                 VSCoq                                  *)
+(*                                 VSRocq                                  *)
 (*                                                                        *)
 (*                   Copyright INRIA and contributors                     *)
 (*       (see version control and README file for authors & dates)        *)
@@ -12,6 +12,10 @@
 (*                                                                        *)
 (**************************************************************************)
 
-val usage : unit -> Boot.Usage.specific_usage
+type event
+type events = event Sel.Event.t list
 
-val get_local_args : string -> Coqargs.t
+val handle_event : event -> events
+val pr_event : Format.formatter -> event -> unit
+
+val init : unit -> event Sel.Event.t list
