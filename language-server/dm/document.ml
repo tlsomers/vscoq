@@ -647,27 +647,32 @@ let rec unchanged_id id = function
   | (Added _ | Deleted _) :: _ -> id
 
 let invalidate top_edit top_id parsed_doc new_sentences =
-  let rec invalidate_diff parsed_doc scheduler_state invalid_ids = function
-    | [] -> invalid_ids, parsed_doc
+  let rec add_new_or_patch parsed_doc scheduler_state = function
+    | [] -> parsed_doc
+    | Deleted _ :: diffs -> add_new_or_patch parsed_doc scheduler_state diffs
     | Equal s :: diffs ->
       let patch_sentence (parsed_doc,scheduler_state) (id,new_s) =
         patch_sentence parsed_doc scheduler_state id new_s
       in
       let parsed_doc, scheduler_state = List.fold_left patch_sentence (parsed_doc, scheduler_state) s in
-      invalidate_diff parsed_doc scheduler_state invalid_ids diffs
-    | Deleted ids :: diffs ->
-      let invalid_ids = List.fold_left (fun ids id -> Stateid.Set.add id ids) invalid_ids ids in
-      let parsed_doc = List.fold_left remove_sentence parsed_doc ids in
-      (* FIXME update scheduler state, maybe invalidate after diff zone *)
-      invalidate_diff parsed_doc scheduler_state invalid_ids diffs
+      add_new_or_patch parsed_doc scheduler_state diffs
     | Added new_sentences :: diffs ->
     (* FIXME could have side effect on the following, unchanged sentences *)
       let add_sentence (parsed_doc,scheduler_state) ({ parsing_start; start; stop; ast; synterp_state } : pre_sentence) =
         add_sentence parsed_doc parsing_start start stop ast synterp_state scheduler_state
       in
       let parsed_doc, scheduler_state = List.fold_left add_sentence (parsed_doc,scheduler_state) new_sentences in
-      invalidate_diff parsed_doc scheduler_state invalid_ids diffs
+      add_new_or_patch parsed_doc scheduler_state diffs
   in
+  let rec remove_old parsed_doc invalid_ids = function
+    | [] -> parsed_doc, invalid_ids
+    | Deleted ids :: diffs ->
+      let invalid_ids = List.fold_left (fun ids id -> Stateid.Set.add id ids) invalid_ids ids in
+      let parsed_doc = List.fold_left remove_sentence parsed_doc ids in
+      (* FIXME update scheduler state, maybe invalidate after diff zone *)
+      remove_old parsed_doc invalid_ids diffs
+    | Equal _ :: diffs
+    | Added _ :: diffs -> remove_old parsed_doc invalid_ids diffs in
   let (_,_synterp_state,scheduler_state) = state_at_pos parsed_doc top_edit in
   let sentence_strings = LM.bindings @@ LM.map (fun s -> string_of_parsed_ast s.ast) parsed_doc.sentences_by_end in
   let sentence_strings = List.map (fun s -> snd s) sentence_strings in
@@ -678,10 +683,11 @@ let invalidate top_edit top_id parsed_doc new_sentences =
   log (fun () -> Format.sprintf "Top edit: %i, Doc: %s, Doc by id: %s" top_edit sentence_string sentence_string_id);
   let old_sentences = sentences_after parsed_doc top_edit in
   let diff = diff old_sentences new_sentences in
+  let parsed_doc, invalid_ids = remove_old parsed_doc Stateid.Set.empty diff in
+  let parsed_doc = add_new_or_patch parsed_doc scheduler_state diff in
   let unchanged_id = unchanged_id top_id diff in
   log (fun () -> "diff:\n" ^ string_of_diff parsed_doc diff);
-  let invalid_ids, doc = invalidate_diff parsed_doc scheduler_state Stateid.Set.empty diff in
-  unchanged_id, invalid_ids, doc
+  unchanged_id, invalid_ids, parsed_doc
 
 (** Validate document when raw text has changed *)
 let validate_document ({ parsed_loc; raw_doc; cancel_handle } as document) =
