@@ -70,10 +70,10 @@ export function activate(context: ExtensionContext) {
                     window.showErrorMessage("No language server found", {modal: true, detail: err.message}, {title: "Install the VsRocq language server (Recommended for Rocq >= 8.18)", id: 0}, {title: "Install VsRocq Legacy (Required for Rocq <= 8.17)", id: 1})
                     .then(act => {
                         if(act?.id === 0) {
-                            commands.executeCommand("vscode.open", Uri.parse('https://github.com/rocq-community/vsrocq#installing-the-language-server'));
+                            commands.executeCommand("vscode.open", Uri.parse('https://github.com/rocq-prover/vscoq?tab=readme-ov-file#installing-the-language-server'));
                         }
                         if (act?.id === 1) {
-                            commands.executeCommand("extension.open", "rocq-community.vsrocq1");
+                            commands.executeCommand("extension.open", "coq-community.vscoq1");
                         }
                     });
                     break;
