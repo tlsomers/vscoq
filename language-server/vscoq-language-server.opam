@@ -1,0 +1,15 @@
+opam-version: "2.0"
+name: "vsrocq-language-server"
+maintainer: "Enrico Tassi <enrico.tassi@inria.fr>"
+authors: [ "Enrico Tassi" "Maxime Dénès" "Romain Tetley" ]
+license: "MIT"
+homepage: "https://github.com/rocq-prover/vsrocq"
+bug-reports: "https://github.com/rocq-prover/vsrocq/issues"
+dev-repo: "git+https://github.com/rocq-prover/vsrocq"
+depends: [
+  "coq-core" { ((>= "8.18" < "9.1~")}
+  "coq-stdlib" { ((>= "8.18" < "9.1~")}
+  "vsrocq-language-server" {= version}
+]
+synopsis: "Compatibility meta package for the VsRocq language server after the Rocq renaming"
+available: arch != "arm32" & arch != "x86_32"
