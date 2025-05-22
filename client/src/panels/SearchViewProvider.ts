@@ -163,7 +163,7 @@ export default class SearchViewProvider implements vscode.WebviewViewProvider {
 
                     if(type === "search") {  
                         const params: SearchRocqRequest = {id, textDocument, pattern, position};
-                        const req = new RequestType<SearchRocqRequest, SearchRocqHandshake, void>("vsrocq/search");
+                        const req = new RequestType<SearchRocqRequest, SearchRocqHandshake, void>("prover/search");
                         client.sendRequest(req, params).then(
                             (handshake: SearchRocqHandshake) => {
                                 webview.postMessage({"command": "launchedSearch"});
@@ -177,7 +177,7 @@ export default class SearchViewProvider implements vscode.WebviewViewProvider {
 
                     if(type === "about") {
                         const params: AboutRocqRequest = {textDocument, pattern, position};
-                        const req = new RequestType<AboutRocqRequest, AboutRocqResponse, void>("vsrocq/about");
+                        const req = new RequestType<AboutRocqRequest, AboutRocqResponse, void>("prover/about");
                             
                         client.sendRequest(req, params).then(
                             (result: AboutRocqResponse) => {
@@ -193,7 +193,7 @@ export default class SearchViewProvider implements vscode.WebviewViewProvider {
 
                     if(type === "check") {
                         const params: CheckRocqRequest = {textDocument, pattern, position};
-                        const req = new RequestType<CheckRocqRequest, CheckRocqResponse, void>("vsrocq/check");
+                        const req = new RequestType<CheckRocqRequest, CheckRocqResponse, void>("prover/check");
                             
                         client.sendRequest(req, params).then(
                             (result: CheckRocqResponse) => {
@@ -209,7 +209,7 @@ export default class SearchViewProvider implements vscode.WebviewViewProvider {
 
                     if(type === "locate") {
                         const params: CheckRocqRequest = {textDocument, pattern, position};
-                        const req = new RequestType<LocateRocqRequest, LocateRocqResponse, void>("vsrocq/locate");
+                        const req = new RequestType<LocateRocqRequest, LocateRocqResponse, void>("prover/locate");
                             
                         client.sendRequest(req, params).then(
                             (result: LocateRocqResponse) => {
@@ -225,7 +225,7 @@ export default class SearchViewProvider implements vscode.WebviewViewProvider {
 
                     if(type === "print") {
                         const params: CheckRocqRequest = {textDocument, pattern, position};
-                        const req = new RequestType<PrintRocqRequest, PrintRocqResponse, void>("vsrocq/print");
+                        const req = new RequestType<PrintRocqRequest, PrintRocqResponse, void>("prover/print");
                             
                         client.sendRequest(req, params).then(
                             (result: PrintRocqResponse) => {

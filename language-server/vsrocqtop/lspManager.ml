@@ -586,10 +586,10 @@ let dispatch_std_notification =
 
 let dispatch_notification =
   let open Notification.Client in function
-  | InterpretToPoint params -> log (fun () -> "Received notification: vsrocq/interpretToPoint"); rocqtopInterpretToPoint params 
-  | InterpretToEnd params -> log (fun () -> "Received notification: vsrocq/interpretToEnd"); rocqtopInterpretToEnd params
-  | StepBackward params -> log (fun () -> "Received notification: vsrocq/stepBackward"); rocqtopStepBackward params
-  | StepForward params -> log (fun () -> "Received notification: vsrocq/stepForward"); rocqtopStepForward params
+  | InterpretToPoint params -> log (fun () -> "Received notification: prover/interpretToPoint"); rocqtopInterpretToPoint params
+  | InterpretToEnd params -> log (fun () -> "Received notification: prover/interpretToEnd"); rocqtopInterpretToEnd params
+  | StepBackward params -> log (fun () -> "Received notification: prover/stepBackward"); rocqtopStepBackward params
+  | StepForward params -> log (fun () -> "Received notification: prover/stepForward"); rocqtopStepForward params
   | Std notif -> dispatch_std_notification notif
 
 let handle_lsp_event = function
