@@ -2,7 +2,7 @@ import * as path from 'path';
 import * as fs from 'node:fs/promises';
 import * as tmp from 'tmp-promise';
 
-import { runTests, downloadAndUnzipVSCode } from '@vscode/test-electron';
+import { runTests } from '@vscode/test-electron';
 
 async function main() {
 	try {
@@ -18,14 +18,14 @@ async function main() {
 		const userDataDir = path.join(storagePath.path, 'settings');
         const userSettingsPath = path.join(userDataDir, 'User');
 
-		const vscoqPath = process.env.VSCOQPATH || path.resolve(__dirname, "../../../language-server/_build/install/default/bin/vscoqtop");
-		const vscoqArgs = process.env.VSCOQARGS?.split(' ');
+		const vsrocqPath = process.env.VSROCQPATH || path.resolve(__dirname, "../../../language-server/_build/install/default/bin/vsrocqtop");
+		const vsrocqArgs = process.env.VSROCQARGS?.split(' ');
 
         const userSettings = {
-			"vscoq.path": vscoqPath,
-			"vscoq.args": vscoqArgs,
-            "vscoq.proof.mode": 1,
-            "vscoq.proof.block": false
+			"vsrocq.path": vsrocqPath,
+			"vsrocq.args": vsrocqArgs,
+            "vsrocq.proof.mode": 1,
+            "vsrocq.proof.block": false
         };
 
 		await fs.mkdir(userSettingsPath, { recursive: true });
@@ -37,10 +37,7 @@ async function main() {
 
 		const launchArgs = [path.resolve(__dirname, '../../testFixture'), "--disable-extensions", "--user-data-dir=" + userDataDir];
 
-		// Download VS Code, unzip it and run the integration test
-        //const vscodeExecutablePath = await downloadAndUnzipVSCode('1.84.0');
-		await runTests({ 
-            // vscodeExecutablePath, 
+		await runTests({
             extensionDevelopmentPath, 
             extensionTestsPath, 
             launchArgs });
