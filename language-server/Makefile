@@ -33,13 +33,13 @@ fatalwarnings: $(DUNE_IN_FILES)
 	@chmod a-w $@
 
 dune-files: $(DUNE_IN_FILES)
-.PHONE: dune-files
+.PHONY: dune-files
 
 coq-dune-files:
 	touch .coq-dune-files
 	$(MAKE) dune-files
 	$(RM) .coq-dune-files
-.PHONE: coq-dune-files
+.PHONY: coq-dune-files
 
 build: $(DUNE_IN_FILES)
 	$(call dune,build) -p vsrocq-language-server
