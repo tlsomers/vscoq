@@ -51,6 +51,7 @@ test: $(DUNE_IN_FILES)
 
 clean:
 	$(call dune,clean)
+	$(RM) $(DUNE_IN_FILES)
 .PHONY: clean
 
 install: $(DUNE_IN_FILES)
