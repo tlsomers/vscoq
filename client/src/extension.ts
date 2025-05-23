@@ -52,7 +52,7 @@ export function activate(context: ExtensionContext) {
     const getDocumentProofs = (uri: Uri) => {
         const textDocument = TextDocumentIdentifier.create(uri.toString());
         const params: DocumentProofsRequest = {textDocument};
-        const req = new RequestType<DocumentProofsRequest, DocumentProofsResponse, void>("vsrocq/documentProofs");
+        const req = new RequestType<DocumentProofsRequest, DocumentProofsResponse, void>("prover/documentProofs");
         Client.writeToVsrocqChannel("Getting proofs for: " + uri.toString());
         return client.sendRequest(req, params);
     };
@@ -184,7 +184,7 @@ export function activate(context: ExtensionContext) {
             const uri = editor.document.uri;
             const textDocument = TextDocumentIdentifier.create(uri.toString());
             const params: ResetRocqRequest = {textDocument};
-            const req = new RequestType<ResetRocqRequest, ResetRocqResponse, void>("vsrocq/resetRocq");
+            const req = new RequestType<ResetRocqRequest, ResetRocqResponse, void>("prover/resetRocq");
             Client.writeToVsrocqChannel(uri.toString());
             client.sendRequest(req, params).then(
                 (res) => {
@@ -246,7 +246,7 @@ export function activate(context: ExtensionContext) {
             GoalPanel.displayProofView(context.extensionUri, editor);
         });
             
-        client.onNotification("vsrocq/updateHighlights", (notification) => {
+        client.onNotification("prover/updateHighlights", (notification) => {
         
             client.saveHighlights(
                 notification.uri,
@@ -258,7 +258,7 @@ export function activate(context: ExtensionContext) {
             client.updateHightlights();
         });
 
-        client.onNotification("vsrocq/moveCursor", (notification: MoveCursorNotification) => {
+        client.onNotification("prover/moveCursor", (notification: MoveCursorNotification) => {
             const {uri, range} = notification;
             const editors = window.visibleTextEditors.filter(editor => {
                 return editor.document.uri.toString() === uri.toString();
@@ -272,22 +272,22 @@ export function activate(context: ExtensionContext) {
             }
         });
 
-        client.onNotification("vsrocq/searchResult", (searchResult: SearchRocqResult) => {
+        client.onNotification("prover/searchResult", (searchResult: SearchRocqResult) => {
             searchProvider.renderSearchResult(searchResult);
         });
 
-        client.onNotification("vsrocq/proofView", (proofView: ProofViewNotification) => {
+        client.onNotification("prover/proofView", (proofView: ProofViewNotification) => {
             const editor = window.activeTextEditor ? window.activeTextEditor : window.visibleTextEditors[0];
             const autoDisplay = workspace.getConfiguration('vsrocq.goals').auto;
             GoalPanel.proofViewNotification(context.extensionUri, editor, proofView, autoDisplay);
         });
 
-        client.onNotification("vsrocq/blockOnError", (notification: ErrorAlertNotification) => {
+        client.onNotification("prover/blockOnError", (notification: ErrorAlertNotification) => {
             const {uri, range} = notification;
             client.createErrorAnimation(uri.toString(), [range]);
         });
 
-        client.onNotification("vsrocq/debugMessage", (rocqMessage: RocqLogMessage) => {
+        client.onNotification("prover/debugMessage", (rocqMessage: RocqLogMessage) => {
             const {message} = rocqMessage;
             const messageString = `${message}`;
             Client.writeRocqMessageLog(messageString);

@@ -51,7 +51,7 @@ export class DocumentStateViewProvider implements TextDocumentContentProvider {
         }
 
         const params: DocumentStateRequest = {textDocument: this.textDocument}; 
-        const req = new RequestType<DocumentStateRequest, DocumentStateResponse, void>("vsrocq/documentState");
+        const req = new RequestType<DocumentStateRequest, DocumentStateResponse, void>("prover/documentState");
         Client.writeToVsrocqChannel("[DocumentStateViewProvider] Getting document state for uri: " + this.textDocument.uri.toString());
         return this._client.sendRequest(req, params).then(
             (result: DocumentStateResponse) => {

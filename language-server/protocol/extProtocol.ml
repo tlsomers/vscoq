@@ -64,16 +64,16 @@ module Notification = struct
     let of_jsonrpc (Jsonrpc.Notification.{ method_; params } as notif) =
       let open Lsp.Import.Result.O in
       match method_ with
-      | "vsrocq/interpretToPoint" ->
+      | "prover/interpretToPoint" ->
         let+ params = Lsp.Import.Json.message_params params InterpretToPointParams.t_of_yojson in
         InterpretToPoint params
-      | "vsrocq/stepBackward" ->
+      | "prover/stepBackward" ->
         let+ params = Lsp.Import.Json.message_params params StepBackwardParams.t_of_yojson in
         StepBackward params
-      | "vsrocq/stepForward" ->
+      | "prover/stepForward" ->
         let+ params = Lsp.Import.Json.message_params params StepForwardParams.t_of_yojson in
         StepForward params
-      | "vsrocq/interpretToEnd" ->
+      | "prover/interpretToEnd" ->
         let+ params = Lsp.Import.Json.message_params params InterpretToEndParams.t_of_yojson in
         InterpretToEnd params
       | _ ->
@@ -134,32 +134,32 @@ module Notification = struct
       | Std notification ->
         Lsp.Server_notification.to_jsonrpc notification
       | UpdateHighlights params ->
-        let method_ = "vsrocq/updateHighlights" in
+        let method_ = "prover/updateHighlights" in
         let params = yojson_of_overview params in
         let params = Some (Jsonrpc.Structured.t_of_yojson params) in
         Jsonrpc.Notification.{ method_; params }
       | ProofView params -> 
-        let method_ = "vsrocq/proofView" in
+        let method_ = "prover/proofView" in
         let params = ProofViewParams.yojson_of_t params in
         let params = Some (Jsonrpc.Structured.t_of_yojson params) in
         Jsonrpc.Notification.{ method_; params }
       | SearchResult params ->
-        let method_ = "vsrocq/searchResult" in
+        let method_ = "prover/searchResult" in
         let params = yojson_of_query_result params in
         let params = Some (Jsonrpc.Structured.t_of_yojson params) in
         Jsonrpc.Notification.{ method_; params }      
       | MoveCursor params ->
-        let method_ = "vsrocq/moveCursor" in 
+        let method_ = "prover/moveCursor" in 
         let params = MoveCursorParams.yojson_of_t params in
         let params = Some (Jsonrpc.Structured.t_of_yojson params) in
         Jsonrpc.Notification.{ method_; params }
       | BlockOnError params ->
-        let method_ = "vsrocq/blockOnError" in 
+        let method_ = "prover/blockOnError" in 
         let params = BlockOnErrorParams.yojson_of_t params in
         let params = Some (Jsonrpc.Structured.t_of_yojson params) in
         Jsonrpc.Notification.{ method_; params }
       | RocqLogMessage params ->
-        let method_ = "vsrocq/debugMessage" in
+        let method_ = "prover/debugMessage" in
         let params = RocqLogMessageParams.yojson_of_t params in
         let params = Some (Jsonrpc.Structured.t_of_yojson params) in
         Jsonrpc.Notification.{ method_; params }
@@ -280,28 +280,28 @@ module Request = struct
   let t_of_jsonrpc (Jsonrpc.Request.{ method_; params } as req) =
     let open Lsp.Import.Result.O in
     match method_ with
-    | "vsrocq/resetRocq" ->
+    | "prover/resetRocq" ->
       let+ params = Lsp.Import.Json.message_params params ResetParams.t_of_yojson in
       Pack (Reset params)
-    | "vsrocq/search" ->
+    | "prover/search" ->
       let+ params = Lsp.Import.Json.message_params params SearchParams.t_of_yojson in
       Pack (Search params)
-    | "vsrocq/about" ->
+    | "prover/about" ->
       let+ params = Lsp.Import.Json.message_params params AboutParams.t_of_yojson in
       Pack (About params)
-    | "vsrocq/check" ->
+    | "prover/check" ->
       let+ params = Lsp.Import.Json.message_params params CheckParams.t_of_yojson in
       Pack (Check params)
-    | "vsrocq/locate" ->
+    | "prover/locate" ->
       let+ params = Lsp.Import.Json.message_params params LocateParams.t_of_yojson in
       Pack (Locate params)
-    | "vsrocq/print" ->
+    | "prover/print" ->
       let+ params = Lsp.Import.Json.message_params params PrintParams.t_of_yojson in
       Pack (Print params)
-    | "vsrocq/documentState" ->
+    | "prover/documentState" ->
       let+ params = Lsp.Import.Json.message_params params DocumentStateParams.t_of_yojson in
       Pack (DocumentState params)
-    | "vsrocq/documentProofs" ->
+    | "prover/documentProofs" ->
       let+ params = Lsp.Import.Json.message_params params DocumentProofsParams.t_of_yojson in
       Pack (DocumentProofs params)
     | _ ->
