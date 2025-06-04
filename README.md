@@ -70,6 +70,8 @@ In VsCode, from the extensions page, either use the drop down menu from the ```U
 
 ### Troubleshooting
 
+Check out the [FAQ](./docs/FAQ.md) for common issues and troubleshooting tips.
+
 #### Known problems
 
 - Getting an ```Unable to start coqtop``` or ```coqtop-stderr: Don't know what to do with -ideslave``` error.
