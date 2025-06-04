@@ -116,25 +116,21 @@ export function activate(context: ExtensionContext) {
     }
 
     const getConfigString = (serverInfo : any) => {
-
+      const clean_strings = (str: string) => {
+        // Properly escape backticks and pipes in the string, replace newlines with spaces
+        return str.replace(/`/g, '\\`').replace(/\|/g, '\\|').replace(/\n/g, ' ');
+      };
         return (
-
-    `**General Info**
-    vscode version: ${version}
-    OS: ${os.type()} ${os.arch()} ${os.release()}
-
-    **Rocq Installation**
-    
-    ${rocqTM.getversionFullOutput()}
-    
-    Path: \`${rocqTM.getRocqPath()}\`
-    ---
-    
-    **vsrocqtop** ${serverInfo?.version}
-    
-    Path: \`${rocqTM.getVsRocqTopPath()}\`
-    `
-
+`| Debug Information | Value |
+| ----------------- | -------------------------------- |
+| Rocq Installation | ${clean_strings(rocqTM.getversionFullOutput())} |
+| Rocq Path         | \`${clean_strings(rocqTM.getRocqPath())}\` |
+| VsRocq Extension Version   | ${clean_strings(extensions.getExtension('rocq-prover.vsrocq')?.packageJSON.version)} |
+| VsRocqTop Version | ${clean_strings(serverInfo?.version)} |
+| VsRocqTop Path  | \`${clean_strings(rocqTM.getVsRocqTopPath())}\` |
+| OS               | ${process.arch} ${process.platform} |
+| VSCode Version | ${process.version} |
+`
         );
 
     };
