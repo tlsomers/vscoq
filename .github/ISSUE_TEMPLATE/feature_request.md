@@ -30,4 +30,4 @@ Add any other context or screenshots about the feature request here.
 
 - Why would this feature be useful?
 - Who would benefit from this feature?
-- Is this feature present in other Coq UIs (e.g., CoqIDE, ProofGeneral, VsCoq Legacy, CoqLSP) or other proof assistant UIs?
+- Is this feature present in other Rocq UIs (e.g., CoqIDE, ProofGeneral, VsCoq Legacy, CoqLSP) or other proof assistant UIs?

@@ -31,29 +31,35 @@ what actually happened. Include any error messages or stack traces.
 
 If applicable, add screenshots and code to help explain your problem.
 
-**Environment (please complete the following information):**
+**Environment (paste the result of `Rocq: Troubleshooting: Show Setup`):**
 
-- **VsRocq Version:** [e.g., 2.2.5] (You can find this in the VS Code Extensions view)
-- **VsRocq Language Server Version (vscoqtop):** [e.g., 2.2.5] (Run `vscoqtop -v` or check `opam list`)
-- **Coq Version:** [e.g., 8.19.0] (Run `coqtop -v`)
-- **Operating System:** [e.g., Ubuntu 22.04, Windows 10, macOS Sonoma]
-- **VS Code / VSCodium Version:** [e.g., 1.85.1]
+<!-- Replace the below with your actual environment details. -->
 
-**Coq Log Output (if applicable)**
+| Debug Information        | Value |
+| ------------------------ | ----- |
+| Rocq Installation        | ...   |
+| Rocq Path                | ...   |
+| VsRocq Extension Version | ...   |
+| VsRocqTop Version        | ...   |
+| VsRocqTop Path           | ...   |
+| OS                       | ...   |
+| VSCode Version           | ...   |
 
-If the issue involves a server crash or unexpected Coq behavior, please provide logs from the "Coq Language Server" output channel in VS Code.
+**Rocq Log Output (if applicable)**
+
+If the issue involves a server crash or unexpected Rocq behavior, please provide logs from the "Rocq Language Server" output channel in VS Code.
 To get detailed logs:
 
 1. Open your VS Code `settings.json`.
-2. Add/modify the `vscoq.args` setting:
+2. Add/modify the `vsrocq.args` setting:
    ```json
-   "vscoq.args": [
+   "vsrocq.args": [
        "-bt",
        "-vscoq-d",
        "all"
    ]
    ```
-3. Reproduce the bug and copy the relevant output from the "Coq Language Server" channel here.
+3. Reproduce the bug and copy the relevant output from the "Rocq Language Server" channel here.
    ```
    <LOG OUTPUT HERE>
    ```
