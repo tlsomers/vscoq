@@ -129,7 +129,7 @@ export function activate(context: ExtensionContext) {
 | VsRocqTop Version | ${clean_strings(serverInfo?.version)} |
 | VsRocqTop Path  | \`${clean_strings(rocqTM.getVsRocqTopPath())}\` |
 | OS               | ${process.arch} ${process.platform} |
-| VSCode Version | ${process.version} |
+| VSCode Version | ${version} |
 `
         );
 
