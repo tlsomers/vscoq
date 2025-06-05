@@ -55,7 +55,7 @@ To get detailed logs:
    ```json
    "vsrocq.args": [
        "-bt",
-       "-vscoq-d",
+       "-vrocq-d",
        "all"
    ]
    ```

@@ -4,9 +4,11 @@ Welcome to the VsRocq FAQ! This document aims to answer common questions and hel
 
 ## Table of Contents
 
-1.  [Installation and Setup](#installation-and-setup)
-1.  [Usage and Features](#usage-and-features)
-1.  [Troubleshooting Common Issues](#troubleshooting-common-issues)
+- [VsRocq Frequently Asked Questions (FAQ)](#vsrocq-frequently-asked-questions-faq)
+  - [Table of Contents](#table-of-contents)
+  - [1. Installation and Setup](#1-installation-and-setup)
+  - [2. Usage and Features](#2-usage-and-features)
+  - [3. Troubleshooting Common Issues](#3-troubleshooting-common-issues)
 
 ---
 
@@ -89,7 +91,7 @@ Welcome to the VsRocq FAQ! This document aims to answer common questions and hel
 
 1.  **The Proof View / Goal Panel isn't showing.**
 
-    - Ensure VsRocq is installed correctly and "VsRocq: Path" points to `vscoqtop`.
+    - Ensure VsRocq is installed correctly and "VsRocq: Path" points to `vsrocqtop`.
     - The panel typically appears when you step into a proof (e.g., after "Rocq: Step Forward" on a `Proof.` command).
     - If it turned grey and unresponsive, it might be a renderer crash (possibly OOM). Try closing and reopening the panel, or "Developer: Reload Window".
 
