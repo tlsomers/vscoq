@@ -9,8 +9,11 @@ import {workspace, window, commands, languages, ExtensionContext, env,
   extensions,
   StatusBarAlignment,
   MarkdownString,
-  WorkspaceEdit
+  WorkspaceEdit,
+  version
 } from 'vscode';
+
+import * as os from 'node:os';
 
 import {
   LanguageClientOptions,
@@ -113,9 +116,14 @@ export function activate(context: ExtensionContext) {
     }
 
     const getConfigString = (serverInfo : any) => {
+
         return (
 
-    `**Rocq Installation**
+    `**General Info**
+    vscode version: ${version}
+    OS: ${os.type()} ${os.arch()} ${os.release()}
+
+    **Rocq Installation**
     
     ${rocqTM.getversionFullOutput()}
     
