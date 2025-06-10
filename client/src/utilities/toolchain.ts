@@ -146,7 +146,7 @@ export default class VsRocqToolchainManager implements Disposable {
                 if(error) {
                     reject(stderr);
                 } else {
-                    const versionRegexp = /\b\d\.\d+(\.\d|\+rc\d|\.dev)\b/g;
+                    const versionRegexp = /\b\d\.\d+(\.\d|\+rc\d|\.dev|\+alpha|\+beta)\b/g;
                     this._versionFullOutput = stdout;
                     const matchArray = stdout.match(versionRegexp);
                     if(matchArray) {
