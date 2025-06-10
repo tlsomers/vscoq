@@ -51,7 +51,7 @@ let Dm.Types.Log log = Dm.Log.mk_log "lspManager"
 let conf_request_id = max_int
 
 let server_info = InitializeResult.create_serverInfo
-  ~name:"vscoq-language-server"
+  ~name:"vsrocq-language-server"
   ~version:"2.2.6"
   ()
 
