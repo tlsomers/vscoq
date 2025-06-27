@@ -120,7 +120,7 @@ val get_proof : state -> Settings.Goals.Diff.Mode.t -> sentence_id option -> Pro
 
 val get_completions : state -> Position.t -> completion_item list 
 
-val handle_event : event -> state -> block:bool -> Settings.Mode.t -> Settings.Goals.Diff.Mode.t -> handled_event
+val handle_event : event -> state -> block:bool -> Settings.Mode.t -> Settings.Goals.Diff.Mode.t -> Settings.Goals.PrettyPrint.t -> handled_event
 (** handles events and returns a new state if it was updated. On top of the next events, it also returns info
     on whether execution has halted due to an error and returns a boolean flag stating whether the view
     should be updated *)

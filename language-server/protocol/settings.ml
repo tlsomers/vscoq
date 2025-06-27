@@ -123,9 +123,25 @@ module Goals = struct
 
   end
 
+  module PrettyPrint = struct
+    
+    type t = String | Pp
+
+    let t_of_yojson = function
+    | `String "String" -> String
+    | `String "Pp" -> Pp
+    | _ -> Yojson.json_error "invalid value"
+
+    let yojson_of_t = function
+    | String -> `String "String"
+    | Pp -> `String "Pp"
+
+  end
+
   type t = {
     diff: Diff.t;
     messages: Messages.t;
+    ppmode: PrettyPrint.t option;
   } [@@deriving yojson] [@@yojson.allow_extra_fields]
 
 end
