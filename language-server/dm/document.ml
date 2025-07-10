@@ -476,7 +476,7 @@ let rec diff old_sentences new_sentences =
 
 let string_of_diff_item doc = function
   | Deleted ids ->
-       ids |> List.map (fun id -> Printf.sprintf "- (id: %d) %s" (Stateid.to_int id) (string_of_parsed_ast (Option.get (get_sentence doc id)).ast))
+       ids |> List.map (fun id -> Printf.sprintf "- (id: %d) %s" (Stateid.to_int id) (try string_of_parsed_ast (Option.get (get_sentence doc id)).ast with Option.IsNone -> "missing from doc"))
   | Added sentences ->
        sentences |> List.map (fun (s : pre_sentence) -> Printf.sprintf "+ %s" (string_of_parsed_ast s.ast))
   | Equal l ->
