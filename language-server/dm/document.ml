@@ -267,7 +267,7 @@ let add_sentence parsed parsing_start start stop (ast: sentence_state) synterp_s
   let scheduler_state_after, schedule = 
     match ast with
     | Error {msg} ->
-      scheduler_state_before, Scheduler.schedule_errored_sentence id msg parsed.schedule
+      scheduler_state_before, Scheduler.schedule_errored_sentence id msg synterp_state parsed.schedule
     | Parsed ast ->
       let ast' = (ast.ast, ast.classification, synterp_state) in
       Scheduler.schedule_sentence (id, ast') scheduler_state_before parsed.schedule
@@ -417,7 +417,7 @@ let patch_sentence parsed scheduler_state_before id ({ parsing_start; ast; start
   let scheduler_state_after, schedule =
     match ast with
     | Error {msg} ->
-      scheduler_state_before, Scheduler.schedule_errored_sentence id msg parsed.schedule
+      scheduler_state_before, Scheduler.schedule_errored_sentence id msg synterp_state parsed.schedule
     | Parsed ast ->
       let ast = (ast.ast, ast.classification, synterp_state) in
       Scheduler.schedule_sentence (id,ast) scheduler_state_before parsed.schedule
@@ -476,7 +476,7 @@ let rec diff old_sentences new_sentences =
 
 let string_of_diff_item doc = function
   | Deleted ids ->
-       ids |> List.map (fun id -> Printf.sprintf "- (id: %d) %s" (Stateid.to_int id) (string_of_parsed_ast (Option.get (get_sentence doc id)).ast))
+       ids |> List.map (fun id -> Printf.sprintf "- (id: %d) %s" (Stateid.to_int id) (try string_of_parsed_ast (Option.get (get_sentence doc id)).ast with Option.IsNone -> "missing from doc"))
   | Added sentences ->
        sentences |> List.map (fun (s : pre_sentence) -> Printf.sprintf "+ %s" (string_of_parsed_ast s.ast))
   | Equal l ->

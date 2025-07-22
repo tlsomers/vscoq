@@ -78,7 +78,7 @@ type delegated_task = {
 
 type prepared_task =
   | PSkip of { id: sentence_id; error: Pp.t option }
-  | PBlock of { id: sentence_id; error: Pp.t Loc.located }
+  | PBlock of { id: sentence_id; synterp : Vernacstate.Synterp.t; error: Pp.t Loc.located }
   | PExec of executable_sentence
   | PQuery of executable_sentence
   | PDelegate of delegated_task
@@ -539,7 +539,7 @@ let last_opt l = try Some (CList.last l).id with Failure _ -> None
 let prepare_task task : prepared_task list =
   match task with
   | Skip { id; error } -> [PSkip { id; error }]
-  | Block { id; error } -> [PBlock {id; error}]
+  | Block { id; synterp; error } -> [PBlock {id; synterp; error}]
   | Exec e -> [PExec e]
   | Query e -> [PQuery e]
   | OpaqueProof { terminator; opener_id; tasks; proof_using} ->
@@ -616,7 +616,8 @@ let execute_task st (vs, events, interrupted) task =
   end else
     try
       match task with
-      | PBlock { id; error = err} ->
+      | PBlock { id; synterp; error = err} ->
+        let vs = { vs with Vernacstate.synterp } in
         let (loc, pp) = err in
         let v = error loc None pp vs in
         let parse_error = Some (id, loc) in

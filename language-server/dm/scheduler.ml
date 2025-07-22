@@ -32,7 +32,7 @@ type executable_sentence = {
 
 type task =
   | Skip of { id: sentence_id; error: Pp.t option }
-  | Block of { id: sentence_id; error: Pp.t Loc.located }
+  | Block of { id: sentence_id; synterp : Vernacstate.Synterp.t; error: Pp.t Loc.located }
   | Exec of executable_sentence
   | OpaqueProof of { terminator: executable_sentence;
                      opener_id: sentence_id;
@@ -223,8 +223,8 @@ let _string_of_state st =
   let scopes = (List.map (fun b -> List.map (fun x -> x.id) b.proof_sentences) st.proof_blocks) @ [st.document_scope] in
   String.concat "|" (List.map (fun l -> String.concat " " (List.map Stateid.to_string l)) scopes)
 
-let schedule_errored_sentence id error schedule =
-  let task = Block {id; error} in
+let schedule_errored_sentence id error synterp schedule =
+  let task = Block {id; synterp; error} in
   let tasks = SM.add id (None, task) schedule.tasks in
   let dependencies = SM.add id Stateid.Set.empty schedule.dependencies in
   {tasks; dependencies}
