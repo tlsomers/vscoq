@@ -16,6 +16,7 @@ open Base
 open Dm
 open Common
 open Protocol
+open LspWrapper
 
 let%test_unit "goals: encoding after replay from top" =
   let st = dm_init_and_parse_test_doc ~text:"Lemma foo : forall x y, x + y = y + x." in
@@ -31,7 +32,8 @@ let%test_unit "goals: encoding after replay from top" =
   let st = handle_dm_events todo st in
   let proof = Stdlib.Option.get (DocumentManager.get_proof st Protocol.Settings.Goals.Diff.Mode.Off None) in
   let messages = DocumentManager.get_messages st (Option.value_exn @@ DocumentManager.Internal.observe_id st) in
-  let _json = Protocol.ExtProtocol.Notification.Server.ProofViewParams.yojson_of_t { proof = Some proof; messages } in
+  (*added bogus values for the other code path (getting everything as strings)*)
+  let _json = Protocol.ExtProtocol.Notification.Server.ProofViewParams.yojson_of_t { proof = Some proof; messages; pp_proof = None; pp_messages = []; range = Range.top() } in
   ()
 
 let%test_unit "goals: proof is available after error" =

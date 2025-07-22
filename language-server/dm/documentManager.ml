@@ -279,6 +279,14 @@ let get_messages st id =
   | Some (_oloc,msg) -> (DiagnosticSeverity.Error, pp_of_rocqpp msg) :: feedback
   | None -> feedback
 
+let get_string_messages st id =
+  let error = ExecutionManager.error st.execution_state id in
+  let feedback = ExecutionManager.feedback st.execution_state id in
+  let feedback = List.map (fun (lvl,_oloc,_,msg) -> DiagnosticSeverity.of_feedback_level lvl, Pp.string_of_ppcmds msg) feedback  in
+  match error with
+  | Some (_oloc,msg) -> (DiagnosticSeverity.Error, Pp.string_of_ppcmds msg) :: feedback
+  | None -> feedback
+
 let get_info_messages st pos =
   match id_of_pos_opt st pos with
   | None -> log (fun () -> "get_messages: Could not find id");[]
@@ -653,6 +661,12 @@ let get_proof st diff_mode id =
   let previous = Option.bind oid previous_st in
   Option.bind ost (ProofState.get_proof ~previous diff_mode)
 
+let get_string_proof st id =
+  let observe_id = to_sentence_id st.observe_id in
+  let oid = Option.append id observe_id in
+  let ost = Option.bind oid (ExecutionManager.get_vernac_state st.execution_state) in
+  Option.bind ost PpProofState.get_proof
+
 let handle_execution_manager_event st ev =
   let id, execution_state_update, events = ExecutionManager.handle_event ev st.execution_state in
   let st = 
@@ -668,7 +682,7 @@ let handle_execution_manager_event st ev =
   let update_view = true in
   {state=st; events=(inject_em_events events); update_view; notification=None}
 
-let handle_event ev st ~block check_mode diff_mode =
+let handle_event ev st ~block check_mode diff_mode (pp_mode: Settings.Goals.PrettyPrint.t) =
   let background = check_mode = Settings.Mode.Continuous in
   match ev with
   | Execute { id; vst_for_next_todo; started; task } ->
@@ -703,14 +717,21 @@ let handle_event ev st ~block check_mode diff_mode =
         {state=(Some st); events=[]; update_view; notification=None}
     end
   | SendProofView (Some id) ->
-    let proof = get_proof st diff_mode (Some id) in
-    let messages = get_messages st id in
-    let params = Notification.Server.ProofViewParams.{ proof; messages} in
+    let proof, pp_proof = match pp_mode with
+    | Pp -> get_proof st diff_mode (Some id), None 
+    | String -> None, get_string_proof st (Some id)
+    in
+    let messages, pp_messages = match pp_mode with
+    | Pp -> get_messages st id, []
+    | String ->[], get_string_messages st id
+    in
+    let range = Document.range_of_id st.document id in
+    let params = Notification.Server.ProofViewParams.{ proof; messages; pp_proof; pp_messages; range} in
     let notification = Some (Notification.Server.ProofView params) in
     let update_view = true in
     {state=(Some st); events=[]; update_view; notification}
   | SendProofView None ->
-    let params = Notification.Server.ProofViewParams.{ proof=None; messages=[] } in
+    let params = Notification.Server.ProofViewParams.{ proof=None; pp_proof=None; messages=[]; pp_messages=[]; range=Range.top() } in
     let notification = Some (Notification.Server.ProofView params) in
     let update_view = true in
     {state=(Some st); events=[]; update_view; notification}

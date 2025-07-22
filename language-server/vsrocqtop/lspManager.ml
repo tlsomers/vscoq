@@ -37,6 +37,8 @@ let states : (string, tab) Hashtbl.t = Hashtbl.create 39
 let check_mode = ref Settings.Mode.Manual
 
 let diff_mode = ref Settings.Goals.Diff.Mode.Off
+
+let pretty_print_mode = ref Settings.Goals.PrettyPrint.Pp
 let max_memory_usage  = ref 4000000000
 
 let full_diagnostics = ref false
@@ -131,7 +133,10 @@ let do_configuration settings =
   full_messages := settings.goals.messages.full;
   max_memory_usage := settings.memory.limit * 1000000000;
   block_on_first_error := settings.proof.block;
-  point_interp_mode := settings.proof.pointInterpretationMode
+  point_interp_mode := settings.proof.pointInterpretationMode;
+  match settings.goals.ppmode with
+  | None -> ()
+  | Some s -> pretty_print_mode := s
 
 let send_configuration_request () =
   let id = `Int conf_request_id in
@@ -649,7 +654,7 @@ let handle_event = function
       log (fun () -> "ignoring event on non-existing document");
       []
     | Some { st; visible } ->
-      let handled_event = Dm.DocumentManager.handle_event e st ~block:!block_on_first_error !check_mode !diff_mode in
+      let handled_event = Dm.DocumentManager.handle_event e st ~block:!block_on_first_error !check_mode !diff_mode !pretty_print_mode in
       let events = handled_event.events in
       begin match handled_event.state with
         | None -> ()

@@ -168,6 +168,13 @@
             "default": "off",
             "markdownDescription": "Controls vsrocq's diff mode. If `on`, only added characters are displayed. If `removed` is selected, both added and removed characters are shown."
           },
+          "vsrocq.goals.ppmode": {
+            "type": "string",
+            "enum": ["Pp"],
+            "default": "Pp",
+            "description": "This read-only setting is to indicate to the server to send goals in pretty printed format instead of plain text.",
+            "readOnly": true
+          },
           "vsrocq.goals.messages.full": {
             "type": "boolean",
             "default": true,

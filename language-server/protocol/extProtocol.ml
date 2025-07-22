@@ -105,8 +105,11 @@ module Notification = struct
     module ProofViewParams = struct
 
       type t = {
+        range: Range.t;
         proof: ProofState.t option;
         messages: (DiagnosticSeverity.t * pp) list;
+        pp_proof: PpProofState.t option;
+        pp_messages: (DiagnosticSeverity.t *string) list;
       } [@@deriving yojson]
 
     end
