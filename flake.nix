@@ -371,6 +371,9 @@
                 ocaml-lsp
               ])
               ++ ([git]);
+            shellHook = ''
+              export PATH="$PWD/language-server/.wrappers:$PATH"
+            '';
           };
 
         vsrocq-master = with import nixpkgs {inherit system;}; let
